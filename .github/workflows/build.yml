@@ -27,16 +27,6 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build shadowJar
-      - name: Upload Release Artifact
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.run_number }}/assets{?name,label}
-          asset_path: ./meshWalk.jar
-          asset_name: meshWalk.jar
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -47,6 +37,15 @@ jobs:
             Latest release
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Artifact
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./meshWalk.jar
+          asset_name: meshWalk.jar
+          asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
