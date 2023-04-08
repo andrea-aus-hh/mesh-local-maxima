@@ -30,13 +30,12 @@ jobs:
       - name: Upload Release Artifact
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.run_number }}/assets{?name,label}
           asset_path: ./meshWalk.jar
           asset_name: meshWalk.jar
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_ID: ${{ env.RELEASE_ID }}
 
       - name: Create Release
         id: create_release
