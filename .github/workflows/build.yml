@@ -30,6 +30,7 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        permissions: write-all
         with:
           tag_name: ${{ github.run_number }}
           release_name: ${{ github.run_number }}
@@ -41,6 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Release Artifact
         uses: actions/upload-release-asset@v1
+        permissions: write-all
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./meshWalk.jar
@@ -52,6 +54,7 @@ jobs:
       - name: Attach Asset to Release
         id: attach_asset
         uses: actions/upload-release-asset@v1
+        permissions: write-all
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./meshWalk.jar
