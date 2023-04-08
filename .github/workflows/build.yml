@@ -33,10 +33,10 @@ jobs:
         uses: actions/create-release@v1
         with:
           tag_name: ${{ github.run_number }}
-          release_name: ${{ github.run_number }}
+          release_name: ${{ github.run_number }} - ${{ github.event.head_commit.timestamp }}
           body: |
             Latest commit:
-            ${{ github.head_ref }} : ${{ github.event.head_commit.message }}
+            ${{ github.event.head_commit.sha }} : ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
         env:
