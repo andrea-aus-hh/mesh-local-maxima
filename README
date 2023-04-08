@@ -1,0 +1,2 @@
+# Compiling the project
+Run `./gradlew shadowJar`
