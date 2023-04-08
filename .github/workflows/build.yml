@@ -44,9 +44,9 @@ jobs:
         with:
           tag_name: ${{ github.run_number }}
           release_name: ${{ github.run_number }}
-        body: |
-          Description of the release
-        draft: false
+          body: |
+            Latest release
+          draft: false
         prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
