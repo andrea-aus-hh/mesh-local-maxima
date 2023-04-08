@@ -38,6 +38,11 @@ jar {
     }
 }
 
+shadowJar {
+    archiveFileName = "meshWalk.jar"
+    destinationDirectory = file("$rootDir")
+}
+
 ext {
     javaMainClass = "org.challenge.Main"
 }
