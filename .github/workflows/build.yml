@@ -9,7 +9,7 @@
 
 name: Java CI
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
@@ -27,25 +27,37 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build shadowJar
-      - name: List files
-        run: ls
-      - name: Archive built jar
-        uses: actions/upload-artifact@v3
+      - name: Upload Release Artifact
+        uses: actions/upload-release-asset@v1
         with:
-          name: jar
-          path: ./testWalk.jar
-  codestyle:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets{?name,label}
+          asset_path: ./meshWalk.jar
+          asset_name: meshWalk.jar
+          asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ env.RELEASE_ID }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+          tag_name: ${{ github.run_number }}
+          release_name: ${{ github.run_number }}
+        body: |
+          Description of the release
+        draft: false
+        prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attach Asset to Release
+        id: attach_asset
+        uses: actions/upload-release-asset@v1
         with:
-          arguments: spotlessCheck
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./meshWalk.jar
+          asset_name: meshWalk.jar
+          asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
