@@ -5,10 +5,20 @@ To compile the code yourself, run
 ./gradlew shadowJar
 ```
 
+Or on Windows:
+
+```
+gradlew.bat shadowJar
+```
+
 This should produce a JAR file named `meshWalk.jar` in the project home directory.
 
 Alternatively, it is possible to download and run a JAR file from the GitHub releases: to each push to master should correspond a release.
 
 # Running
 
-After compiling or downloading the jar, run it like this
+After compiling or downloading the jar, it can be run like this:
+
+```
+java -jar meshWalk.jar <json-file-path> <number-of-maxima>
+```
