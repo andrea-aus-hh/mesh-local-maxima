@@ -1,6 +1,14 @@
-# Compiling the project
+# Compiling
 
-To compile the code your self, run
-```./gradlew shadowJar```
+To compile the code yourself, run
+```
+./gradlew shadowJar
+```
 
-This should produce a file named `meshWalk.jar` in the project home directory.
+This should produce a JAR file named `meshWalk.jar` in the project home directory.
+
+Alternatively, it is possible to download and run a JAR file from the GitHub releases: to each push to master should correspond a release.
+
+# Running
+
+After compiling or downloading the jar, run it like this
