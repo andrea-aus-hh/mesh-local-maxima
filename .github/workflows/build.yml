@@ -35,7 +35,8 @@ jobs:
           tag_name: ${{ github.run_number }}
           release_name: ${{ github.run_number }}
           body: |
-            Latest release
+            Latest commit:
+            ${{ github.head_ref }} : ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
         env:
