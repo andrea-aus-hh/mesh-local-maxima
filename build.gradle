@@ -43,6 +43,10 @@ shadowJar {
     destinationDirectory = file("$rootDir")
 }
 
+clean.doFirst {
+    delete "${rootDir}/meshWalk.jar"
+}
+
 ext {
     javaMainClass = "org.challenge.Main"
 }
