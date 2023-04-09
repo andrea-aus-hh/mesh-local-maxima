@@ -25,7 +25,7 @@ public class Main {
       Gson gson = new GsonBuilder().setPrettyPrinting().create();
       var meshJsonData = gson.fromJson(reader, MeshJson.class);
       var mesh = meshJsonData.toExplorableMesh();
-      ArrayList<Element> allLocalMaxima = mesh.findAllLocalMaxima(requestedNumberOfMaxima);
+      ArrayList<Element> allLocalMaxima = mesh.findLocalMaxima(requestedNumberOfMaxima);
       System.out.println(
           gson.toJson(
               allLocalMaxima.stream()

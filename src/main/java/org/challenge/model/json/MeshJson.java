@@ -27,6 +27,7 @@ public class MeshJson {
                                 .value)
                         .nodes(new HashSet<>(currentElement.nodes))
                         .build())
+            .sorted((e1, e2) -> Double.compare(e2.height, e1.height))
             .collect(Collectors.toList());
 
     var nodesWithElements =

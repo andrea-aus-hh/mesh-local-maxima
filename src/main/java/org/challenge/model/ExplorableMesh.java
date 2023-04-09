@@ -45,15 +45,15 @@ public class ExplorableMesh {
             .filter(neighbour -> neighbour.height.compareTo(currentElement.height) > 0)
             .findFirst();
     return optionalHigherNeighbour.orElseGet(
-        () -> unexploredNeighbours.stream().findFirst().orElseGet(this::getRandomUnexplored));
+        () -> unexploredNeighbours.stream().findFirst().orElseGet(this::getHighestUnexplored));
   }
 
-  private @Nullable Element getRandomUnexplored() {
-    return elementsWithValue.stream().filter(n -> !n.hasBeenExplored()).findAny().orElse(null);
+  private @Nullable Element getHighestUnexplored() {
+    return elementsWithValue.stream().filter(n -> !n.hasBeenExplored()).findFirst().orElse(null);
   }
 
-  public ArrayList<Element> findAllLocalMaxima(int requiredAmountOfMaxima) {
-    var currentElement = elementsWithValue.stream().findAny().get();
+  public ArrayList<Element> findLocalMaxima(int requiredAmountOfMaxima) {
+    var currentElement = elementsWithValue.stream().findFirst().get();
 
     var listOfMaxima = new ArrayList<Element>(List.of());
 
@@ -63,7 +63,7 @@ public class ExplorableMesh {
         listOfMaxima.add(currentElement);
         currentElement.explorationState = LOCAL_MAXIMUM;
         neighbours.forEach(it -> it.explorationState = NOT_LOCAL_MAXIMUM);
-        currentElement = neighbours.stream().findAny().get();
+        currentElement = neighbours.stream().findFirst().get();
       } else {
         currentElement.explorationState = NOT_LOCAL_MAXIMUM;
         currentElement = findHigherNeighbourOrRandomise(currentElement, neighbours);

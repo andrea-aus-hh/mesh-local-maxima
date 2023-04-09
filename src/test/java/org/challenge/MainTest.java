@@ -35,7 +35,7 @@ class MainTest {
     mesh = meshJsonData.toExplorableMesh();
 
     // When
-    ArrayList<Element> allLocalMaxima = mesh.findAllLocalMaxima(15);
+    ArrayList<Element> allLocalMaxima = mesh.findLocalMaxima(15);
 
     // Then
     var finalString =
