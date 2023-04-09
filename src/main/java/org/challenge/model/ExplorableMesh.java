@@ -33,10 +33,16 @@ public class ExplorableMesh {
 
   private Optional<Element> findAnyHigherUnexploredNeighbour(
       Element currentElement, Set<Element> neighbours) {
-    Set<Element> unexploredNeighbours =
-        neighbours.stream().filter(Element::hasNotBeenExplored).collect(Collectors.toSet());
-    return unexploredNeighbours.stream()
-        .filter(neighbour -> neighbour.height.compareTo(currentElement.height) > 0)
+    return neighbours.stream()
+        .filter(Element::hasNotBeenExplored)
+        .filter(
+            neighbour -> {
+              if (neighbour.height.compareTo(currentElement.height) < 0) {
+                neighbour.explorationState = NOT_LOCAL_MAXIMUM;
+                return false;
+              }
+              return true;
+            })
         .findFirst();
   }
 
@@ -59,11 +65,7 @@ public class ExplorableMesh {
         listOfMaxima.add(currentElement);
         currentElement.explorationState = LOCAL_MAXIMUM;
         neighbours.forEach(it -> it.explorationState = NOT_LOCAL_MAXIMUM);
-        newElementOptional =
-            neighbours.stream()
-                .filter(Element::hasNotBeenExplored)
-                .findFirst()
-                .or(this::getHighestUnexploredElement);
+        newElementOptional = getHighestUnexploredElement();
       } else {
         currentElement.explorationState = NOT_LOCAL_MAXIMUM;
         newElementOptional =
