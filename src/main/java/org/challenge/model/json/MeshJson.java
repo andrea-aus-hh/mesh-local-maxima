@@ -13,6 +13,9 @@ public class MeshJson {
 
   public ExplorableMesh toExplorableMesh() {
 
+    var nodesWithElements =
+        nodes.stream().collect(Collectors.toMap(it -> it.id, it -> new HashSet<Element>()));
+
     var elementsWithValues =
         elements.stream()
             .map(
@@ -27,15 +30,12 @@ public class MeshJson {
                                 .value)
                         .nodes(new HashSet<>(currentElement.nodes))
                         .build())
+            .peek(
+                currentElement ->
+                    currentElement.nodes.forEach(
+                        node -> nodesWithElements.get(node).add(currentElement)))
             .sorted((e1, e2) -> Double.compare(e2.height, e1.height))
             .collect(Collectors.toList());
-
-    var nodesWithElements =
-        nodes.stream().collect(Collectors.toMap(it -> it.id, it -> new HashSet<Element>()));
-
-    elementsWithValues.forEach(
-        currentElement ->
-            currentElement.nodes.forEach(node -> nodesWithElements.get(node).add(currentElement)));
 
     return ExplorableMesh.builder()
         .elementsWithValueSorted(elementsWithValues)
