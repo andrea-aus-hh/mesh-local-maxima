@@ -38,7 +38,7 @@ public class MeshJson {
             currentElement.nodes.forEach(node -> nodesWithElements.get(node).add(currentElement)));
 
     return ExplorableMesh.builder()
-        .elementsWithValue(elementsWithValues)
+        .elementsWithValueSorted(elementsWithValues)
         .nodesToElementsMap(nodesWithElements)
         .build();
   }

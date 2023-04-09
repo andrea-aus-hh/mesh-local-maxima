@@ -6,13 +6,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Value;
-import org.jetbrains.annotations.Nullable;
 
 @Builder
 @Value
 public class ExplorableMesh {
-  List<Element> elementsWithValue;
+  /** Elements with their attached height value, sorted in descending order. */
+  List<Element> elementsWithValueSorted;
 
+  /** Map each node to the set of elements it touches. */
   Map<Integer, HashSet<Element>> nodesToElementsMap;
 
   private Set<Element> findNeighbours(Element element) {
@@ -22,52 +23,47 @@ public class ExplorableMesh {
         .collect(Collectors.toSet());
   }
 
-  private boolean isLocalMaximum(Element requestedElement) {
+  private boolean isLocalMaximum(Element requestedElement, Set<Element> neighbours) {
     if (requestedElement.explorationState == LOCAL_MAXIMUM) return true;
     if (requestedElement.explorationState == NOT_LOCAL_MAXIMUM) return false;
 
-    var elements =
-        requestedElement.nodes.stream()
-            .map(nodesToElementsMap::get)
-            .flatMap(Set::stream)
-            .collect(Collectors.toSet());
-
-    return elements.stream()
-        .noneMatch(currentElement -> currentElement.height > requestedElement.height);
+    return neighbours.stream()
+        .noneMatch(currentNeighbour -> currentNeighbour.height > requestedElement.height);
   }
 
-  private @Nullable Element findHigherNeighbourOrRandomise(
+  private Optional<Element> findAnyHigherUnexploredNeighbour(
       Element currentElement, Set<Element> neighbours) {
     Set<Element> unexploredNeighbours =
-        neighbours.stream().filter(n -> !n.hasBeenExplored()).collect(Collectors.toSet());
-    Optional<Element> optionalHigherNeighbour =
-        unexploredNeighbours.stream()
-            .filter(neighbour -> neighbour.height.compareTo(currentElement.height) > 0)
-            .findFirst();
-    return optionalHigherNeighbour.orElseGet(
-        () -> unexploredNeighbours.stream().findFirst().orElseGet(this::getHighestUnexplored));
+        neighbours.stream().filter(Element::hasNotBeenExplored).collect(Collectors.toSet());
+    return unexploredNeighbours.stream()
+        .filter(neighbour -> neighbour.height.compareTo(currentElement.height) > 0)
+        .findFirst();
   }
 
-  private @Nullable Element getHighestUnexplored() {
-    return elementsWithValue.stream().filter(n -> !n.hasBeenExplored()).findFirst().orElse(null);
+  private Optional<Element> getHighestUnexploredElement() {
+    return elementsWithValueSorted.stream().filter(Element::hasNotBeenExplored).findFirst();
   }
 
   public ArrayList<Element> findLocalMaxima(int requiredAmountOfMaxima) {
-    var currentElement = elementsWithValue.stream().findFirst().get();
+    var currentElement = elementsWithValueSorted.stream().findFirst().get();
 
     var listOfMaxima = new ArrayList<Element>(List.of());
 
     while (listOfMaxima.size() < requiredAmountOfMaxima) {
       var neighbours = findNeighbours(currentElement);
-      if (isLocalMaximum(currentElement)) {
+      if (isLocalMaximum(currentElement, neighbours)) {
         listOfMaxima.add(currentElement);
         currentElement.explorationState = LOCAL_MAXIMUM;
         neighbours.forEach(it -> it.explorationState = NOT_LOCAL_MAXIMUM);
         currentElement = neighbours.stream().findFirst().get();
       } else {
         currentElement.explorationState = NOT_LOCAL_MAXIMUM;
-        currentElement = findHigherNeighbourOrRandomise(currentElement, neighbours);
-        if (currentElement == null) {
+        var newElementOptional =
+            findAnyHigherUnexploredNeighbour(currentElement, neighbours)
+                .or(this::getHighestUnexploredElement);
+        if (newElementOptional.isPresent()) {
+          currentElement = newElementOptional.get();
+        } else {
           System.err.println(
               "Requested "
                   + requiredAmountOfMaxima
