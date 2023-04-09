@@ -45,32 +45,40 @@ public class ExplorableMesh {
   }
 
   public ArrayList<Element> findLocalMaxima(int requiredAmountOfMaxima) {
-    var currentElement = elementsWithValueSorted.stream().findFirst().get();
+    var currentElement =
+        elementsWithValueSorted.stream()
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No elements are present in the mesh."));
 
     var listOfMaxima = new ArrayList<Element>(List.of());
 
     while (listOfMaxima.size() < requiredAmountOfMaxima) {
       var neighbours = findNeighbours(currentElement);
+      Optional<Element> newElementOptional;
       if (isLocalMaximum(currentElement, neighbours)) {
         listOfMaxima.add(currentElement);
         currentElement.explorationState = LOCAL_MAXIMUM;
         neighbours.forEach(it -> it.explorationState = NOT_LOCAL_MAXIMUM);
-        currentElement = neighbours.stream().findFirst().get();
+        newElementOptional =
+            neighbours.stream()
+                .filter(Element::hasNotBeenExplored)
+                .findFirst()
+                .or(this::getHighestUnexploredElement);
       } else {
         currentElement.explorationState = NOT_LOCAL_MAXIMUM;
-        var newElementOptional =
+        newElementOptional =
             findAnyHigherUnexploredNeighbour(currentElement, neighbours)
                 .or(this::getHighestUnexploredElement);
-        if (newElementOptional.isPresent()) {
-          currentElement = newElementOptional.get();
-        } else {
-          System.err.println(
-              "Requested "
-                  + requiredAmountOfMaxima
-                  + " local maxima, but the mesh only has "
-                  + listOfMaxima.size());
-          break;
-        }
+      }
+      if (newElementOptional.isPresent()) {
+        currentElement = newElementOptional.get();
+      } else {
+        System.err.println(
+            "Requested "
+                + requiredAmountOfMaxima
+                + " local maxima, but the mesh only has "
+                + listOfMaxima.size());
+        break;
       }
     }
     return listOfMaxima;
