@@ -47,7 +47,10 @@ public class ExplorableMesh {
   }
 
   private Optional<Element> getHighestUnexploredElement() {
-    return elementsWithValueSorted.stream().filter(Element::hasNotBeenExplored).findFirst();
+    for (var currentElement : elementsWithValueSorted) {
+      if (currentElement.hasNotBeenExplored()) return Optional.of(currentElement);
+    }
+    return Optional.empty();
   }
 
   public ArrayList<Element> findLocalMaxima(int requiredAmountOfMaxima) {
